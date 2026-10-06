@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite" parallel="methods" thread-count="2">
+    <listeners>
+        <listener class-name="listeners.TestListeners"/>
+    </listeners>
+    <test verbose="2" preserve-order="true" name="C:/Users/Acer/Documents/GitHub1/GreenKart-Selenium/src/test">
+        <groups>
+            <run>
+                <include name="regression"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="ProductSearch"/>
+        </classes>
+    </test>
+</suite>
