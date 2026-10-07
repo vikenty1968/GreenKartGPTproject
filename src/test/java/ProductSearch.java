@@ -103,7 +103,7 @@ public class ProductSearch extends BaseTest {
         catalogPage.setProductQuantity(targetProduct,"1");
         int finalQuantity=catalogPage.getProductQuantity(targetProduct);
         Assert.assertEquals(finalQuantity,Integer.parseInt("1"));
-        Assert.fail("Temp failed test");
+      //  Assert.fail("Temp failed test");
     }
 @Test(enabled = false,dataProvider = "invalidQuantities",groups ={"negative","knownBugs","regression","quantity"})
     public void rejectInvalidProductQuantities(String value){
