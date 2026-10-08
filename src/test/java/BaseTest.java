@@ -2,11 +2,13 @@ import config.ConfigReader;
 import driver.DriverFactory;
 import driver.DriverManager;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 
 import java.net.MalformedURLException;
+import java.time.Duration;
 
 public class BaseTest {
   //  WebDriverWait wait;
@@ -28,7 +30,7 @@ public class BaseTest {
                 + ", driver: " + System.identityHashCode(driver));
        // driver.manage().window().maximize();
         DriverManager.getDriver().manage().window().maximize();
-      //  wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+       // wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 //     //   driver.get(configReader.getProperty("baseUrl"));
         DriverManager.getDriver().get((configReader.getProperty("baseUrl")));
     }

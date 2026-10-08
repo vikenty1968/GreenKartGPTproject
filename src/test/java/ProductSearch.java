@@ -1,9 +1,17 @@
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
+
+import java.time.Duration;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class ProductSearch extends BaseTest {
 
@@ -104,6 +112,23 @@ public class ProductSearch extends BaseTest {
         int finalQuantity=catalogPage.getProductQuantity(targetProduct);
         Assert.assertEquals(finalQuantity,Integer.parseInt("1"));
       //  Assert.fail("Temp failed test");
+    }
+    @Test
+    public void opensFlightBookingTab(){
+        CatalogPage catalogPage =new CatalogPage(getDriver());
+        WebDriverWait wait= new WebDriverWait(getDriver(), Duration.ofSeconds(10));
+        String parentWindow= getDriver().getWindowHandle();
+        Set<String> allWindows = getDriver().getWindowHandles();
+        System.out.println(parentWindow);
+        catalogPage.clickFlightBooking();
+        wait.until(ExpectedConditions.numberOfWindowsToBe(allWindows.size()+1));
+        allWindows = getDriver().getWindowHandles();
+        Iterator<String>itr = allWindows.iterator();
+      //returns true or false
+        boolean flightBookPageFound= catalogPage.searchWindowByPartURL(allWindows,"dropdownsPractise/");
+        Assert.assertTrue(flightBookPageFound,"FlightBookPage was not found");
+        getDriver().switchTo().window(parentWindow);
+        Assert.assertTrue(getDriver().getCurrentUrl().contains("/seleniumPractise"));
     }
 @Test(enabled = false,dataProvider = "invalidQuantities",groups ={"negative","knownBugs","regression","quantity"})
     public void rejectInvalidProductQuantities(String value){

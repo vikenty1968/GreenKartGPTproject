@@ -24,6 +24,7 @@ public class CatalogPage extends BasePage{
     private By headerPrice = By.xpath("//td[normalize-space()='Price']/following-sibling::td[2]");
     private By cartPreview =By.cssSelector("a.cart-icon");
     private By noResult =By.cssSelector(".products .no-results h2");
+    private By flightLink =By.xpath("//a[normalize-space()='Flight Booking']");
     public List<String> searchProductInCatalog(String query){
         WebElement search = wait.until(ExpectedConditions
                 .visibilityOfElementLocated(searchField));
@@ -117,6 +118,9 @@ public class CatalogPage extends BasePage{
         quantityInput.click();
         quantityInput.clear();
         quantityInput.sendKeys(value);
+    }
+    public void clickFlightBooking(){
+       driver.findElement(flightLink).click();
     }
 
 }
