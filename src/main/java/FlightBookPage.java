@@ -4,7 +4,10 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Set;
+
+import static org.openqa.selenium.support.ui.ExpectedConditions.textToBe;
 
 public class FlightBookPage extends BasePage{
     public FlightBookPage(WebDriver givenDriver) {
@@ -22,6 +25,9 @@ public class FlightBookPage extends BasePage{
             By.cssSelector(".picker-first2 span#view_fulldate_id_1");
     private By arrivalFieldText =
             By.cssSelector("#Div1.picker-second span#view_fulldate_id_2");
+    private By nextMonth = By.cssSelector(" .ui-datepicker-next");
+    private By leftCalendarTitle =By.cssSelector(".ui-corner-left .ui-datepicker-title");
+
     public String getReturnDateOpacity(){
         String opacity = driver.findElement(returnField).getCssValue("opacity");
         return opacity;
@@ -59,12 +65,9 @@ public class FlightBookPage extends BasePage{
         String chosenCity = driver.findElement(arrivalField).getDomProperty("value");
         return chosenCity;
     }
-    public void selectDepartureDay(){
-        wait.until(ExpectedConditions
-                .elementToBeClickable(By.xpath("//td[@data-month='4']/a[normalize-space()='16']"))).click();
-    }
+
     public void selectDepartureDayInDisplayedMonth(int monthIndex,int day){
-        wait.until(ExpectedConditions
+           wait.until(ExpectedConditions
                 .elementToBeClickable(By.xpath("//td[@data-month='"+monthIndex+"']/a[normalize-space()='"+day+"']"))).click();
     }
 
@@ -75,14 +78,32 @@ public class FlightBookPage extends BasePage{
         wait.until(ExpectedConditions
                 .elementToBeClickable(By.cssSelector(".picker-second button.ui-datepicker-trigger"))).click();
     }
-    public void selectReturnDate() {
+    public void selectReturnDate(int monthIndex,int day) {
         By returnDate = By.xpath(
-                "//td[@data-handler='selectDay' and @data-month='4']/a[text()='30']"
+                "//td[@data-handler='selectDay' and @data-month='"+monthIndex+"']/a[text()='"+day+"']"
         );
         wait.until(ExpectedConditions.elementToBeClickable(returnDate)).click();
     }
     public String getSelectedReturnDate() {
         return driver.findElement(arrivalFieldText).getText();
     }
+    public void clickNextMonth(){
+        String previousTitle = getLeftCalendarTitle();
+        wait.until(ExpectedConditions.elementToBeClickable(nextMonth)).click();
+        wait.until(ExpectedConditions.not(textToBe(leftCalendarTitle,previousTitle)));
+    }
 
+    public String getLeftCalendarTitle() {
+       return driver.findElement(leftCalendarTitle).getText();
+    }
+    public void moveToDisplayedMonth(String expectedMonthYear){
+        int count =0;
+            while(!getLeftCalendarTitle().equalsIgnoreCase(expectedMonthYear)){
+                if(count>12){
+                    throw new IllegalStateException("Month not found "+ expectedMonthYear);
+                }
+            clickNextMonth();
+            count++;
+        }
+    }
 }
