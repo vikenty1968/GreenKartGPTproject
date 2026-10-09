@@ -63,6 +63,11 @@ public class FlightBookPage extends BasePage{
         wait.until(ExpectedConditions
                 .elementToBeClickable(By.xpath("//td[@data-month='4']/a[normalize-space()='16']"))).click();
     }
+    public void selectDepartureDayInDisplayedMonth(int monthIndex,int day){
+        wait.until(ExpectedConditions
+                .elementToBeClickable(By.xpath("//td[@data-month='"+monthIndex+"']/a[normalize-space()='"+day+"']"))).click();
+    }
+
     public String getSelectedDepartureDate() {
         return driver.findElement(departureDateText).getText();
     }

@@ -39,19 +39,10 @@ public class FlightBookTest extends BaseTest {
 
     }
     @Test(groups = "smokeFlight")
-    public void selectDepartureArrivalField() throws InterruptedException {
-//        CatalogPage catalogPage = new CatalogPage(getDriver());
-//        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
-//        Set<String> allWindows = getDriver().getWindowHandles();
-//        catalogPage.clickFlightBooking();
-//        wait.until(ExpectedConditions.numberOfWindowsToBe(allWindows.size() + 1));
-//        allWindows = getDriver().getWindowHandles();
-//        catalogPage.searchWindowByPartURL(allWindows, "/dropdownsPractise");
-//        Assert.assertTrue(getDriver().getCurrentUrl().contains("/dropdownsPractise"));
- //       FlightBookPage fbp = new FlightBookPage(getDriver());
+    public void selectsDepartureAndArrivalCities()  {
+
         FlightBookPage fbp=getFlightBookPage();
-        fbp.selectRoundTrip();
-        // chose departure
+          // chose departure
         fbp.clickDepartureField();
         fbp.selectDepartureCity("KNU");
         String chosenCity=fbp.getSelectedDepartureCity();
@@ -61,14 +52,31 @@ public class FlightBookTest extends BaseTest {
         fbp.selectArrivalCity("BOM");
         String arrivalCity= fbp.getSelectedArrivalCity().trim();
         Assert.assertEquals(arrivalCity,"Mumbai (BOM)");
-        fbp.selectDepartureDay();
+
+
+    }
+    @Test(groups = "smokeFlight")
+    public void selectsRoundTripDates() {
+        FlightBookPage fbp = getFlightBookPage();
+        fbp.selectRoundTrip();
+
+        // preparation cities need to get the calendar
+        fbp.clickDepartureField();
+        fbp.selectDepartureCity("KNU");
+        fbp.clickArrivalField();
+        fbp.selectArrivalCity("BOM");
+
+        fbp.selectDepartureDayInDisplayedMonth(4,16);
         Assert.assertEquals(
                 fbp.getSelectedDepartureDate(),
                 "Thu, May 16 2019"
         );
-      fbp.invokeReturnCalendar();
-      fbp.selectReturnDate();
-      Assert.assertEquals(fbp.getSelectedReturnDate(),"Thu, May 30 2019");
-      Thread.sleep(5000);
+
+        fbp.invokeReturnCalendar();
+        fbp.selectReturnDate();
+        Assert.assertEquals(
+                fbp.getSelectedReturnDate(),
+                "Thu, May 30 2019"
+        );
     }
 }
