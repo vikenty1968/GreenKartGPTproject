@@ -1,4 +1,4 @@
-import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -8,15 +8,15 @@ import org.testng.annotations.Test;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 public class FlightBookTest extends BaseTest {
-    private LocalDate departureDate = LocalDate.of(2019, 5, 05);
-    private LocalDate returnDate = LocalDate.of(2019, 5, 31);
-    LocalDate departureInJune = LocalDate.of(2019, 6, 1);
-    LocalDate returnInDecember = LocalDate.of(2019, 12, 31);
+
+
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, MMM dd yyyy", Locale.ENGLISH);
+    DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH);
 
     private FlightBookPage getFlightBookPage() {
         CatalogPage catalogPage = new CatalogPage(getDriver());
@@ -34,15 +34,6 @@ public class FlightBookTest extends BaseTest {
     @Test(groups = "smokeFlight")
     public void checkReturnDayOpacity() {
 
-//        CatalogPage catalogPage = new CatalogPage(getDriver());
-//        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
-//        Set<String> allWindows = getDriver().getWindowHandles();
-//        catalogPage.clickFlightBooking();
-//        wait.until(ExpectedConditions.numberOfWindowsToBe(allWindows.size() + 1));
-//        allWindows = getDriver().getWindowHandles();
-//        catalogPage.searchWindowByPartURL(allWindows, "/dropdownsPractise");
-//        Assert.assertTrue(getDriver().getCurrentUrl().contains("/dropdownsPractise"));
-//        FlightBookPage fbp = new FlightBookPage(getDriver());
         FlightBookPage fbp = getFlightBookPage();
         fbp.selectRoundTrip();
         Assert.assertEquals(fbp.getReturnDateOpacity(), "1");
@@ -68,35 +59,27 @@ public class FlightBookTest extends BaseTest {
 
 
     }
-
-    @Test(groups = "smokeFlight")
-    public void selectsRoundTripDates() {
+    @Test
+    public void chosePaymentCurrency(){
         FlightBookPage fbp = getFlightBookPage();
-        fbp.selectRoundTrip();
-
-        // preparation cities need to get the calendar
-        fbp.clickDepartureField();
-        fbp.selectDepartureCity("KNU");
-        fbp.clickArrivalField();
-        fbp.selectArrivalCity("BOM");
-
-        fbp.selectDepartureDayInDisplayedMonth(departureDate.getMonthValue() - 1, departureDate.getDayOfMonth());
-        //create formatter for universal assert
-        Assert.assertEquals(
-                fbp.getSelectedDepartureDate(),
-                departureDate.format(formatter));
-
-
-        fbp.invokeReturnCalendar();
-        fbp.selectReturnDate(returnDate.getMonthValue() - 1, returnDate.getDayOfMonth());
-        Assert.assertEquals(
-                fbp.getSelectedReturnDate(),
-                returnDate.format(formatter)
-        );
+       String currency= fbp.selectCurrency("USD","AED");
+        Assert.assertEquals(currency,"AED");
+        System.out.println("Currency=" +currency);
+    }
+    @Test
+    public void canSelectAndDeselectStudentDiscount(){
+        FlightBookPage fbp=getFlightBookPage();
+        fbp.setStudentDiscount(true);
+        Assert.assertTrue(fbp.isStudentDiscountSelected());
+        fbp.setStudentDiscount(false);
+        Assert.assertFalse(fbp.isStudentDiscountSelected());
     }
 
-    @Test(dataProvider = "roundTripDates")
-    public void selectsRoundTripDatesInDifferentMonths() {
+
+
+
+    @Test(dataProvider = "roundTripDates",groups = "regressionFlight")
+    public void selectsRoundTripDates(LocalDate departureDate, LocalDate returnDate) {
         FlightBookPage fbp = getFlightBookPage();
         fbp.selectRoundTrip();
 
@@ -105,17 +88,18 @@ public class FlightBookTest extends BaseTest {
         fbp.selectDepartureCity("KNU");
         fbp.clickArrivalField();
         fbp.selectArrivalCity("BOM");
-        fbp.clickNextMonth();
-        Assert.assertEquals(fbp.getLeftCalendarTitle(), "June 2019");
+        //  fbp.clickNextMonth();
+        fbp.moveToDisplayedMonth(departureDate.format(monthFormatter));
+        Assert.assertEquals(fbp.getLeftCalendarTitle(), departureDate.format(monthFormatter));
 
-        fbp.selectDepartureDayInDisplayedMonth(departureInJune.getMonthValue() - 1, departureInJune.getDayOfMonth());
-        Assert.assertEquals(fbp.getSelectedDepartureDate(), departureInJune.format(formatter));
+        fbp.selectDepartureDayInDisplayedMonth(departureDate.getMonthValue() - 1, departureDate.getDayOfMonth());
+        Assert.assertEquals(fbp.getSelectedDepartureDate(), departureDate.format(formatter));
         fbp.invokeReturnCalendar();
-        fbp.moveToDisplayedMonth("December 2019");
-        Assert.assertEquals(fbp.getLeftCalendarTitle(), "December 2019");
+        fbp.moveToDisplayedMonth(returnDate.format(monthFormatter));
+        Assert.assertEquals(fbp.getLeftCalendarTitle(), returnDate.format(monthFormatter));
 
-        fbp.selectReturnDate(returnInDecember.getMonthValue() - 1, returnInDecember.getDayOfMonth());
-        Assert.assertEquals(fbp.getSelectedReturnDate(), returnInDecember.format(formatter));
+        fbp.selectReturnDate(returnDate.getMonthValue() - 1, returnDate.getDayOfMonth());
+        Assert.assertEquals(fbp.getSelectedReturnDate(), returnDate.format(formatter));
     }
 
     @DataProvider(name = "roundTripDates")
@@ -125,10 +109,20 @@ public class FlightBookTest extends BaseTest {
                 {
                         LocalDate.of(2019, 6, 1),
                         LocalDate.of(2019, 12, 31)
-                }, {
-                LocalDate.of(2019, 12, 31),
-                LocalDate.of(2020, 1, 1)
-        }
+                },
+                {
+                        LocalDate.of(2019, 12, 31),
+                        LocalDate.of(2020, 1, 1)
+                },
+                {
+                        LocalDate.of(2019, 5, 5),
+                        LocalDate.of(2019, 5, 31)
+                },
+                {
+                    LocalDate.of(2021, 3, 15),
+                        LocalDate.of(2021, 5, 3)
+
+                }
 
 
         };

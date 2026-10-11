@@ -5,6 +5,7 @@
         <groups>
             <run>
                 <include name="smokeFlight"/>
+                <include name="regressionFlight"/>
             </run>
         </groups>
         <classes>

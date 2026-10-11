@@ -1,10 +1,14 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static org.openqa.selenium.support.ui.ExpectedConditions.textToBe;
@@ -27,6 +31,7 @@ public class FlightBookPage extends BasePage{
             By.cssSelector("#Div1.picker-second span#view_fulldate_id_2");
     private By nextMonth = By.cssSelector(" .ui-datepicker-next");
     private By leftCalendarTitle =By.cssSelector(".ui-corner-left .ui-datepicker-title");
+    private By studentDiscount =By.id("ctl00_mainContent_chk_StudentDiscount");
 
     public String getReturnDateOpacity(){
         String opacity = driver.findElement(returnField).getCssValue("opacity");
@@ -99,11 +104,38 @@ public class FlightBookPage extends BasePage{
     public void moveToDisplayedMonth(String expectedMonthYear){
         int count =0;
             while(!getLeftCalendarTitle().equalsIgnoreCase(expectedMonthYear)){
-                if(count>12){
+                if(count>24){
                     throw new IllegalStateException("Month not found "+ expectedMonthYear);
                 }
             clickNextMonth();
             count++;
         }
+    }
+    public String selectCurrency(String currency,String currency1){
+        WebElement field = wait.until(ExpectedConditions
+                .elementToBeClickable(By.cssSelector("#ctl00_mainContent_DropDownListCurrency")));
+        Select select= new Select(field);
+        select.selectByVisibleText(currency);//search by option teg
+        select.selectByValue(currency1);//search bu value teg
+        String option=select.getFirstSelectedOption().getText();
+        printOptions(field);
+        return option;
+
+    }
+    public void printOptions(WebElement field){
+        Select select= new Select(field);
+        List<WebElement>list= select.getOptions();
+        for(WebElement opt:list){
+            System.out.println(opt.getText());
+        }
+    }
+    public void setStudentDiscount(boolean selected){
+        WebElement studentCheck = wait.until(ExpectedConditions.elementToBeClickable(studentDiscount));
+        if(studentCheck.isSelected()!=selected){
+            studentCheck.click();
+        }
+    }
+    public boolean isStudentDiscountSelected(){
+        return driver.findElement(studentDiscount).isSelected();
     }
 }

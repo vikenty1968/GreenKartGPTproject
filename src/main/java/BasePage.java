@@ -1,3 +1,4 @@
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.devtools.latest.domsnapshot.model.StringIndex;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -17,6 +18,7 @@ public class BasePage {
     public boolean waitFoUrl(String endPoint){
         return  wait.until(ExpectedConditions.urlContains(endPoint));
     }
+
     public boolean searchWindowByPartURL(Set<String> windows, String partURL){
         Iterator<String >itr=windows.iterator();
         while (itr.hasNext()){
@@ -27,5 +29,8 @@ public class BasePage {
                             return  true;
             }
         }return false;
+    }
+    public void switchToIframe(By locator){
+        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(locator));
     }
 }
